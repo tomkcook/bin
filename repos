@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+
+import requests, json, urllib3, argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('image', default=None, nargs="*")
+parser.add_argument('--names', '-n', action='store_true', help="Only show image names, not available versions")
+parser.add_argument('--tag-contains', '-t', help="Only show images that have a tag containing this string")
+args = parser.parse_args()
+
+auth=('vsys', 'v1rtu05Y5')
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+if args.image is None or len(args.image) == 0:
+    r = requests.get('https://bamboo.vsys.local:5000/v2/_catalog?n=1000', auth=auth, verify=False)
+    data = json.loads(r.text)
+    names = data['repositories']
+else:
+    names = args.image
+
+if args.names:
+    print("\n".join(names))
+    exit()
+
+for name in names:
+    r = requests.get('https://bamboo.vsys.local:5000/v2/{}/tags/list'.format(name), auth=auth, verify=False)
+    data = json.loads(r.text)
+    if 'tags' not in data:
+        continue
+    tags = list(filter(lambda x: args.tag_contains is None or args.tag_contains in x, data['tags']))
+    if len(tags) == 0:
+        continue
+    print('{}:'.format(name))
+    tags = sorted(tags)
+    if tags is not None:
+        print('\n'.join('\t{}'.format(x) for x in tags))
+    

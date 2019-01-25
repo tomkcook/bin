@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if [[ $# < 2 ]]; then
+	echo "Usage: $0 <source-image> <target-image>"
+	exit
+fi
+
+SOURCE="${1}"
+DEST="${2}"
+
+function imageExists {
+	docker image inspect ${1} > /dev/null 2>&1
+}
+
+if imageExists ${DEST}; then
+	echo "Image ${DEST} already exists"
+	exit
+fi
+
+if ! imageExists ${SOURCE} ; then
+	echo "Image ${SOURCE} does not exist locally; attempting to pull it."
+	if ! docker pull ${SOURCE}; then
+		echo "Image ${SOURCE} could not be pulled."
+		exit
+	fi
+fi
+
+if ! docker tag ${SOURCE} ${DEST}; then
+	echo "Failed to re-tag image"
+	exit
+fi
+
+docker push ${DEST}
+

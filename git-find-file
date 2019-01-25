@@ -1,0 +1,26 @@
+#!/bin/bash
+# Find a file in all branches of git.
+
+function listBranches {
+    while read hash; do
+        while read branch; do
+            echo $hash $branch
+        done < <(git branch --contains $hash | sed -e 's/^ *\**//g')
+    done < <(git rev-list --all)
+}
+
+if [[ $1 == "-a" ]] || [[ $1 == "--all" ]]; then
+    shift
+    while read -r hash branch; do
+        if (git ls-tree -r --name-only $hash | grep -q "$1"); then
+            echo $name
+        fi
+    done < <(listBranches) | sort | uniq
+else
+    while read -r hash name; do
+        if (git ls-tree -r --name-only $hash | grep -q vdhcp); then
+            echo $name
+        fi
+    done < <(git show-ref --heads) | sort | uniq
+fi
+

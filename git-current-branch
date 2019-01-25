@@ -1,0 +1,6 @@
+#!/bin/bash
+
+git branch --contains HEAD | awk '
+{ branch=$NF }
+END { print branch }
+'
