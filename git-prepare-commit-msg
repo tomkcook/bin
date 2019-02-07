@@ -1,0 +1,7 @@
+#!/bin/bash
+
+branch=$(git current-branch)
+if [[ $branch =~ '^[A-Z]{2,4}-[0-9]{1,5}: ' ]]; then
+   num=${branch//:.*$/}
+   sed -i -e "/^${num}: /d" -e "1i ${num}: " ${1}
+fi
