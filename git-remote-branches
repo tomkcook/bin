@@ -1,0 +1,2 @@
+#!/bin/bash
+git ls-remote | grep 'refs/heads' | sed -e 's%.*refs/heads/%%g'
