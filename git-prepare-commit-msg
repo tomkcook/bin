@@ -1,7 +1,12 @@
 #!/bin/bash
 
 branch=$(git current-branch)
-if [[ $branch =~ '^[A-Z]{2,4}-[0-9]{1,5}: ' ]]; then
-   num=${branch//:.*$/}
-   sed -i -e "/^${num}: /d" -e "1i ${num}: " ${1}
+if [[ $branch =~ ^((bugfix)|(feature)/)?[A-Z]{2,4}-[0-9]{1,5}-.* ]]; then
+   num=$(echo ${branch} | perl -pe 's/(?:(?:feature)|(?:bugfix)\/)?([A-Z]{1,4}-[0-9]{1,5})-.*/\1/g')
+   if [[ ${1} == -t ]]; then
+	   echo "${num}"
+   else
+	   echo "${num}"
+#	   sed -i -e "/^${num}: /d" -e "1i ${num}: " ${1}
+   fi
 fi

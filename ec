@@ -1,3 +1,3 @@
 #!/bin/bash
-emacsclient $@ &
+emacsclient -c -a emacs $@ &
 
